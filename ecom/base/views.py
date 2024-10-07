@@ -50,6 +50,25 @@ def userRegistration(request):
     except:
         message = {'detail': 'User with this email already exists'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def getUserProfileUpdate(request):
+    user = request.user
+    serializer = UserSerializerWithToken(user, many=False)
+
+    data = request.data
+    
+    user.first_name = data['name']
+    user.username = data['email']
+    user.email = data['email']
+
+    if data['password'] != '':
+        user.password = make_password(data['password'])
+
+    user.save()
+
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -67,7 +86,6 @@ def getUsers(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getProducts(request):
     products = Product.objects.all()
     serializer = ProductSerializer(products, many=True)
@@ -75,7 +93,6 @@ def getProducts(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getProduct(request, pk):
     product = Product.objects.get(_id=pk)
     serializer = ProductSerializer(product, many=False)

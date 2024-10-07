@@ -35,5 +35,5 @@ class UserSerializerWithToken(UserSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = Product
         fields = '__all__'
